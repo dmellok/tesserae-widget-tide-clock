@@ -1,0 +1,228 @@
+/* tide_clock: paper, a dial, a curve and a short list. Everything scales
+   from the cell with clamp() on cqmin; the .size-* and .lay-* classes only
+   change structure. Colour is Spectra tokens throughout. */
+
+:host { display: block; height: 100%; }
+
+.tc {
+  container-type: size;
+  width: 100%; height: 100%;
+  background: var(--surface);
+  color: var(--text-primary);
+  font-family: var(--font-family, inherit);
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  box-sizing: border-box;
+  --tc-ink: var(--text-primary);
+  --tc-soft: var(--text-secondary);
+  --tc-faint: var(--text-muted);
+  --tc-hand: var(--accent-1);
+  --tc-water: var(--accent-4-soft);
+  --tc-sun: var(--accent-2);
+}
+
+/* ---- the dial ------------------------------------------------------- */
+
+.dial { width: 100%; height: 100%; display: block; }
+.d-face { fill: var(--surface); }
+.d-outer { fill: none; stroke: var(--tc-ink); stroke-width: 14; }
+.d-inner { fill: none; stroke: var(--tc-ink); stroke-width: 7; }
+.d-word {
+  fill: var(--tc-ink); font-size: 78px; font-weight: 800; letter-spacing: 7px;
+}
+.d-word-b { dominant-baseline: hanging; }
+.d-tick { stroke: var(--tc-ink); stroke-width: 7; stroke-linecap: butt; }
+.d-tick-q { stroke-width: 12; }
+.d-tick-main { stroke: var(--tc-ink); stroke-width: 20; stroke-linecap: butt; }
+.d-num {
+  fill: var(--tc-ink); font-size: 76px; font-weight: 800; text-anchor: middle;
+}
+.d-state {
+  fill: var(--tc-soft); font-size: 42px; font-weight: 800; letter-spacing: 9px; text-anchor: middle;
+}
+.d-hand path, .d-hand circle { fill: var(--tc-hand); }
+.d-hand .d-hub { fill: var(--surface); }
+
+/* ---- the moon ------------------------------------------------------- */
+
+.moon { display: block; }
+.m-disc { fill: var(--surface); stroke: var(--tc-ink); stroke-width: 4; }
+.m-lit { fill: var(--tc-ink); }
+
+/* ---- the curve ------------------------------------------------------ */
+
+.curve { min-height: 0; min-width: 0; overflow: hidden; }
+.curve-svg { display: block; }
+.c-fill { fill: var(--tc-water); }
+.c-line { fill: none; stroke: var(--tc-ink); stroke-width: clamp(2px, 0.6cqmin, 5px); stroke-linejoin: round; stroke-linecap: round; }
+.c-base { stroke: var(--tc-ink); stroke-width: clamp(2px, 0.5cqmin, 4px); }
+.c-tick { stroke: var(--tc-ink); stroke-width: 2px; }
+.c-tick-major { stroke-width: 3px; }
+.c-tlabel {
+  fill: var(--tc-soft); font-size: 1em; font-weight: 700; text-anchor: middle; letter-spacing: 0.02em;
+}
+.c-tlabel-day { fill: var(--tc-ink); font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; }
+.c-ev { font-size: 0.92em; font-weight: 800; text-anchor: middle; fill: var(--tc-ink); }
+.c-ev-low { fill: var(--tc-ink); }
+.c-sun circle { fill: var(--tc-sun); stroke: var(--tc-ink); stroke-width: 2px; }
+.c-sun line { stroke: var(--tc-ink); stroke-width: 2px; stroke-linecap: round; }
+.c-suncap { font-size: 0.86em; font-weight: 700; text-anchor: middle; fill: var(--tc-ink); }
+.c-suntime { font-weight: 800; }
+.c-now { stroke: var(--tc-hand); stroke-width: clamp(2px, 0.5cqmin, 4px); }
+.c-now-tri { fill: var(--tc-hand); }
+.c-now-dot { fill: var(--tc-hand); stroke: var(--surface); stroke-width: 2px; }
+.c-nowlabel { font-size: 0.95em; font-weight: 800; text-anchor: middle; fill: var(--tc-hand); letter-spacing: 0.06em; }
+
+/* ---- dial and curve ------------------------------------------------- */
+
+.wrap { display: flex; width: 100%; height: 100%; align-items: stretch; }
+/* The dial box is as wide as the dial, not a full-height square, so the
+   column beside it gets the room the dial's margins would otherwise take. */
+.dialbox {
+  flex: 0 0 auto; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  padding: 6cqmin 1cqmin 6cqmin 4cqmin; box-sizing: border-box;
+}
+.dialbox .dial { height: 100%; width: auto; aspect-ratio: 1 / 1; }
+.side {
+  flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column;
+  padding: 4cqmin 4.5cqmin 3.5cqmin 1.5cqmin; box-sizing: border-box; gap: 0;
+}
+.side .curve { flex: 1 1 auto; font-size: clamp(10px, 2.4cqmin, 15px); }
+.head { margin-top: 2.2cqmin; }
+.place {
+  font-size: clamp(16px, 7cqmin, 56px); font-weight: 800; line-height: 1.02; letter-spacing: -0.015em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.date {
+  font-size: clamp(10px, 2.6cqmin, 18px); font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--tc-soft); margin-top: 0.8cqmin;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.state {
+  font-size: clamp(10px, 2.6cqmin, 18px); font-weight: 700; color: var(--tc-ink); margin-top: 0.8cqmin;
+  line-height: 1.3;
+}
+.list {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5em, 1fr)); gap: 0.6cqmin 3cqmin;
+  margin-top: 2.4cqmin; font-size: clamp(11px, 3cqmin, 21px);
+}
+.ev {
+  display: flex; align-items: baseline; gap: 0.55em;
+  font-weight: 700; white-space: nowrap; overflow: hidden;
+}
+.ev .ev-time { font-weight: 800; }
+.ev .ev-h { color: var(--tc-ink); }
+.ev .ev-kind { font-size: 0.72em; font-weight: 800; letter-spacing: 0.12em; color: var(--tc-soft); }
+.ev.past { color: var(--tc-faint); }
+.ev.past .ev-kind { color: var(--tc-faint); }
+.ev-empty { font-size: clamp(11px, 3cqmin, 20px); font-weight: 700; color: var(--tc-soft); }
+.foot {
+  margin-top: auto; padding-top: 2cqmin;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 0.5cqmin;
+  font-size: clamp(10px, 2.4cqmin, 16px); font-weight: 700; color: var(--tc-soft);
+  letter-spacing: 0.04em; white-space: nowrap; overflow: hidden;
+}
+.foot > span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.foot-moon { display: inline-flex; align-items: center; gap: 0.5em; }
+.foot .moon { width: 1.6em; height: 1.6em; }
+
+/* Portrait: the dial on top at about half the height, the rest beneath. */
+.wrap.portrait { flex-direction: column; }
+.wrap.portrait .dialbox { height: 50cqh; width: auto; margin: 0 auto; padding: 3cqmin 3cqmin 1cqmin; }
+.wrap.portrait .dialbox .dial { height: 100%; width: auto; }
+.wrap.portrait .side { padding: 1cqmin 5cqmin 3.5cqmin; }
+.wrap.portrait .side .curve { font-size: clamp(10px, 2.2cqmin, 15px); }
+.wrap.portrait .place { font-size: clamp(16px, 6.5cqmin, 56px); }
+.wrap.portrait .list { grid-template-columns: 1fr 1fr; }
+
+/* Small cell: the curve is a hairline strip, the list goes, the foot goes. */
+.size-sm .dialbox { padding: 4cqmin 0.5cqmin 4cqmin 3cqmin; }
+.size-sm .side { padding: 3cqmin 3.5cqmin 3cqmin 0.5cqmin; }
+.size-sm .side .curve { font-size: 10px; min-height: 36%; }
+.size-sm .head { margin-top: 1cqmin; }
+.size-sm .place { font-size: clamp(14px, 7.5cqmin, 24px); }
+.size-sm .date { font-size: 10px; }
+.size-sm .state { font-size: 10px; margin-top: 0.4cqmin; line-height: 1.25; }
+.size-sm .list { grid-template-columns: 1fr; gap: 0.2cqmin; margin-top: 1.2cqmin; font-size: 11px; }
+.size-sm .ev:nth-child(n+3) { display: none; }
+.size-sm .foot { display: none; }
+.size-sm .d-state { display: none; }
+
+/* ---- almanac -------------------------------------------------------- */
+
+.alm {
+  display: flex; flex-direction: column; width: 100%; height: 100%;
+  padding: 4cqmin 5cqmin 3.2cqmin; box-sizing: border-box;
+}
+.alm-head { display: flex; align-items: flex-start; gap: 3cqmin; }
+.alm-moon { flex: 0 0 auto; width: clamp(28px, 11cqmin, 96px); height: clamp(28px, 11cqmin, 96px); }
+.alm-title { min-width: 0; flex: 1 1 auto; }
+.alm-h1 {
+  font-size: clamp(16px, 7.2cqmin, 64px); font-weight: 800; line-height: 1.02; letter-spacing: -0.02em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.alm-sub {
+  font-size: clamp(10px, 2.8cqmin, 20px); font-weight: 700; color: var(--tc-soft); margin-top: 0.9cqmin;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.alm .curve { flex: 1 1 auto; margin-top: 1.5cqmin; font-size: clamp(10px, 2.6cqmin, 17px); }
+.alm-foot { margin-top: 1.4cqmin; display: flex; align-items: baseline; justify-content: space-between; gap: 3cqmin; }
+.alm-list { display: flex; gap: 3.5cqmin; flex-wrap: nowrap; overflow: hidden; min-width: 0; }
+.alm-ev {
+  display: flex; align-items: baseline; gap: 0.45em; white-space: nowrap;
+  font-size: clamp(11px, 2.9cqmin, 21px); font-weight: 700; flex: 0 1 auto; min-width: 0; overflow: hidden;
+}
+.alm-ev .ev-time { font-weight: 800; }
+.alm-ev .ev-kind { font-size: 0.7em; font-weight: 800; letter-spacing: 0.12em; color: var(--tc-soft); }
+.alm-ev.past { color: var(--tc-faint); }
+.alm-ev.past .ev-kind { color: var(--tc-faint); }
+.alm-ev-empty { font-size: clamp(11px, 3cqmin, 20px); font-weight: 700; color: var(--tc-soft); }
+.alm-src {
+  margin-top: 0.8cqmin;
+  font-size: clamp(9px, 2.1cqmin, 14px); font-weight: 700; color: var(--tc-soft); letter-spacing: 0.04em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.size-sm .alm { padding: 3cqmin 4cqmin 2.5cqmin; }
+.size-sm .alm-h1 { font-size: clamp(14px, 7cqmin, 24px); }
+.size-sm .alm-sub { font-size: 10px; }
+.size-sm .alm .curve { font-size: 10px; }
+.size-sm .alm-src { display: none; }
+.size-sm .alm-ev { font-size: 11px; }
+.size-sm .alm-ev:nth-child(n+4) { display: none; }
+
+/* ---- dial alone ----------------------------------------------------- */
+
+.only {
+  display: flex; flex-direction: column; width: 100%; height: 100%;
+  align-items: center; justify-content: center; padding: 2.5cqmin; box-sizing: border-box;
+}
+.only .dialbox { flex: 1 1 auto; min-height: 0; height: auto; width: auto; max-width: 100%; padding: 0; }
+.only .dial { max-width: 100%; max-height: 100%; }
+.only-text { flex: 0 0 auto; text-align: center; padding-top: 1.5cqmin; min-width: 0; max-width: 100%; }
+.only-next {
+  font-size: clamp(12px, 5cqmin, 40px); font-weight: 800; line-height: 1.05; letter-spacing: -0.01em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.only-sub {
+  font-size: clamp(10px, 2.5cqmin, 18px); font-weight: 700; color: var(--tc-soft); margin-top: 0.6cqmin;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.size-xs .only { padding: 1.5cqmin; }
+.size-xs .d-word { font-size: 92px; letter-spacing: 5px; }
+
+/* ---- error ---------------------------------------------------------- */
+
+.err {
+  height: 100%; display: flex; flex-direction: column; justify-content: center;
+  gap: 1.2cqmin; padding: 6cqmin; box-sizing: border-box;
+}
+.err i { font-size: clamp(22px, 9cqmin, 64px); color: var(--tc-hand); line-height: 1; }
+.err-t {
+  font-size: clamp(10px, 2.8cqmin, 16px); font-weight: 800; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--tc-soft); margin-top: 1cqmin;
+}
+.err-b { font-size: clamp(13px, 4.6cqmin, 34px); font-weight: 800; line-height: 1.18; }
+.size-xs .err-t, .size-xs .err-b { display: none; }
+.size-xs .err { align-items: center; }
